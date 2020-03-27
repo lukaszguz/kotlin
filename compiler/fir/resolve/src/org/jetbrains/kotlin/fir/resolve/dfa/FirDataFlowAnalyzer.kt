@@ -126,13 +126,15 @@ abstract class FirDataFlowAnalyzer<FLOW : Flow>(
 
     fun enterFunction(function: FirFunction<*>) {
         val (functionEnterNode, previousNode) = graphBuilder.enterFunction(function)
-        if (previousNode == null) {
-            functionEnterNode.mergeIncomingFlow()
-        } else {
-            // Enter anonymous function
-            assert(functionEnterNode.previousNodes.isEmpty())
-            functionEnterNode.flow = logicSystem.forkFlow(previousNode.flow)
-        }
+        functionEnterNode.mergeIncomingFlow(shouldForkFlow = previousNode != null)
+
+//        if (previousNode == null) {
+//            functionEnterNode.mergeIncomingFlow()
+//        } else {
+//            // Enter anonymous function
+//            assert(functionEnterNode.previousNodes.isEmpty())
+//            functionEnterNode.flow = logicSystem.forkFlow(previousNode.flow)
+//        }
     }
 
     fun exitFunction(function: FirFunction<*>): ControlFlowGraph? {
@@ -960,14 +962,20 @@ abstract class FirDataFlowAnalyzer<FLOW : Flow>(
 
     private val CFGNode<*>.origin: CFGNode<*> get() = if (this is StubNode) firstPreviousNode else this
 
-    private fun <T : CFGNode<*>> T.mergeIncomingFlow(updateReceivers: Boolean = false): T = this.also { node ->
+    private fun <T : CFGNode<*>> T.mergeIncomingFlow(
+        updateReceivers: Boolean = false,
+        shouldForkFlow: Boolean = false
+    ): T = this.also { node ->
         val previousFlows = if (node.isDead)
             node.previousNodes.map { it.flow }
         else
             node.previousNodes.mapNotNull { prev -> prev.takeIf { node.incomingEdges.getValue(it).usedInDfa }?.flow }
-        val flow = logicSystem.joinFlow(previousFlows)
+        var flow = logicSystem.joinFlow(previousFlows)
         if (updateReceivers) {
             logicSystem.updateAllReceivers(flow)
+        }
+        if (shouldForkFlow) {
+            flow = flow.fork()
         }
         node.flow = flow
     }
