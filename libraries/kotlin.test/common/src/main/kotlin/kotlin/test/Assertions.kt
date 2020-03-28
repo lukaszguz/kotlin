@@ -92,6 +92,12 @@ fun fail(message: String? = null): Nothing {
     asserter.fail(message)
 }
 
+/**
+ * Marks a test as having failed if this point in the execution path is reached, with an optional [message]
+ * and [cause] exception.
+ *
+ * The [cause] exception is set as the root cause of the test failure.
+ */
 @SinceKotlin("1.4")
 fun fail(message: String? = null, cause: Throwable? = null): Nothing {
     asserter.fail(message, cause)
@@ -194,9 +200,10 @@ interface Asserter {
     fun fail(message: String?): Nothing
 
     /**
-     * Fails the current test with the specified message.
+     * Fails the current test with the specified message and cause exception.
      *
      * @param message the message to report.
+     * @param cause the exception to set as the root cause of the reported failure.
      */
     @SinceKotlin("1.4")
     fun fail(message: String?, cause: Throwable?): Nothing

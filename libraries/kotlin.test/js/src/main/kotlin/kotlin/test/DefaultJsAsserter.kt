@@ -76,7 +76,7 @@ internal object DefaultJsAsserter : Asserter {
         failWithMessage({ message }, cause)
     }
 
-    private fun failWithMessage(lazyMessage: () -> String?, cause: Throwable?): Nothing {
+    private inline fun failWithMessage(lazyMessage: () -> String?, cause: Throwable?): Nothing {
         val message = lazyMessage()
         invokeHook(false) { message }
         throw AssertionErrorWithCause(message, cause)
