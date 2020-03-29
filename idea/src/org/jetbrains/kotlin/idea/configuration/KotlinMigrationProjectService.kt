@@ -111,15 +111,8 @@ class KotlinMigrationProjectService(val project: Project) {
     }
 
     companion object {
-        fun getInstanceIfNotDisposed(project: Project): KotlinMigrationProjectService? {
-            return runReadAction {
-                if (!project.isDisposed) {
-                    project.getServiceSafe(KotlinMigrationProjectService::class.java)
-                } else {
-                    null
-                }
-            }
-        }
+        fun getInstance(project: Project): KotlinMigrationProjectService =
+            project.getServiceSafe(KotlinMigrationProjectService::class.java)
 
         private fun prepareMigrationInfo(old: MigrationState?, new: MigrationState?): MigrationInfo? {
             if (old == null || new == null) {
