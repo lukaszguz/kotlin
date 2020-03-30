@@ -15,8 +15,13 @@ import org.jetbrains.kotlin.fir.resolve.transformers.body.resolve.resultType
 import org.jetbrains.kotlin.fir.symbols.impl.FirCallableSymbol
 import org.jetbrains.kotlin.fir.symbols.impl.FirFunctionSymbol
 import org.jetbrains.kotlin.fir.types.isNothing
+import java.util.concurrent.atomic.AtomicInteger
 
 class ControlFlowGraphBuilder {
+    companion object {
+        private val idCounter = AtomicInteger(0)
+    }
+
     private val graphs: Stack<ControlFlowGraph> = stackOf(ControlFlowGraph(null, "<TOP_LEVEL_GRAPH>", ControlFlowGraph.Kind.TopLevel))
     val graph: ControlFlowGraph get() = graphs.top()
 
@@ -60,10 +65,10 @@ class ControlFlowGraphBuilder {
     var levelCounter: Int = 0
         private set
 
-    private var idCounter: Int = 0
+//    private var idCounter: Int = 0
     private val shouldPassFlowFromInplaceLambda: Stack<Boolean> = stackOf(true)
 
-    fun createId(): Int = idCounter++
+    fun createId(): Int = idCounter.getAndIncrement()
 
     fun isTopLevel(): Boolean = graphs.size == 1
 
