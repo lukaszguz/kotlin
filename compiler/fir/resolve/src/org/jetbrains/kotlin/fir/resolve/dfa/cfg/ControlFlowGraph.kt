@@ -39,6 +39,7 @@ class ControlFlowGraph(val declaration: FirDeclaration?, val name: String, val k
             "SubGraph already has owner"
         }
         graph.owner = this
+        _subGraphs += graph
     }
 
     enum class Kind {
