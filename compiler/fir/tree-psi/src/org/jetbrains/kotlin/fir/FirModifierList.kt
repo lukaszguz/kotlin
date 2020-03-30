@@ -11,12 +11,27 @@ import com.intellij.openapi.util.Ref
 import com.intellij.psi.PsiElement
 import com.intellij.psi.tree.TokenSet
 import com.intellij.util.diff.FlyweightCapableTreeStructure
+import org.jetbrains.kotlin.KtNodeTypes
 import org.jetbrains.kotlin.lexer.KtModifierKeywordToken
 import org.jetbrains.kotlin.lexer.KtTokens
 import org.jetbrains.kotlin.psi.KtModifierList
+import org.jetbrains.kotlin.psi.KtModifierListOwner
 
 sealed class FirModifierList {
     abstract val modifiers: List<FirModifier<*>>
+}
+
+fun FirSourceElement?.getModifierList(): FirModifierList? {
+    return when (this) {
+        null -> null
+        is FirPsiSourceElement<*> -> (psi as? KtModifierListOwner)?.modifierList?.let { FirPsiModifierList(it) }
+        is FirLightSourceElement -> {
+            val kidsRef = Ref<Array<LighterASTNode?>>()
+            tree.getChildren(element, kidsRef)
+            val modifierListNode = kidsRef.get().find { it?.tokenType == KtNodeTypes.MODIFIER_LIST } ?: return null
+            FirLightModifierList(modifierListNode, tree)
+        }
+    }
 }
 
 private val MODIFIER_KEYWORD_SET = TokenSet.orSet(KtTokens.SOFT_KEYWORDS, TokenSet.create(KtTokens.IN_KEYWORD, KtTokens.FUN_KEYWORD))
