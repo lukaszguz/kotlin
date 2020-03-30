@@ -295,6 +295,9 @@ fun SmartPrinter.printImplementation(implementation: Implementation) {
                             if (!field.needsSeparateTransform) {
                                 field.transform()
                             }
+                            if (field.needTransformInOtherChildren) {
+                                println("transform${field.name.capitalize()}(transformer, data)")
+                            }
                         }
                         println("return this")
                     }

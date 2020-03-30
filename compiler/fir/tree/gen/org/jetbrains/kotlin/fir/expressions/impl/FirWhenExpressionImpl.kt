@@ -43,10 +43,16 @@ internal class FirWhenExpressionImpl(
     }
 
     override fun <D> transformChildren(transformer: FirTransformer<D>, data: D): FirWhenExpressionImpl {
+        transformAnnotations(transformer, data)
         transformCalleeReference(transformer, data)
         transformSubject(transformer, data)
         transformBranches(transformer, data)
         transformOtherChildren(transformer, data)
+        return this
+    }
+
+    override fun <D> transformAnnotations(transformer: FirTransformer<D>, data: D): FirWhenExpressionImpl {
+        annotations.transformInplace(transformer, data)
         return this
     }
 
@@ -72,7 +78,7 @@ internal class FirWhenExpressionImpl(
 
     override fun <D> transformOtherChildren(transformer: FirTransformer<D>, data: D): FirWhenExpressionImpl {
         typeRef = typeRef.transformSingle(transformer, data)
-        annotations.transformInplace(transformer, data)
+        transformAnnotations(transformer, data)
         return this
     }
 

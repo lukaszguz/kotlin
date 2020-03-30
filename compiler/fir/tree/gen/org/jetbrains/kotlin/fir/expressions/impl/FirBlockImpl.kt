@@ -32,8 +32,14 @@ internal class FirBlockImpl(
     }
 
     override fun <D> transformChildren(transformer: FirTransformer<D>, data: D): FirBlockImpl {
+        transformAnnotations(transformer, data)
         transformStatements(transformer, data)
         transformOtherChildren(transformer, data)
+        return this
+    }
+
+    override fun <D> transformAnnotations(transformer: FirTransformer<D>, data: D): FirBlockImpl {
+        annotations.transformInplace(transformer, data)
         return this
     }
 
@@ -43,7 +49,7 @@ internal class FirBlockImpl(
     }
 
     override fun <D> transformOtherChildren(transformer: FirTransformer<D>, data: D): FirBlockImpl {
-        annotations.transformInplace(transformer, data)
+        transformAnnotations(transformer, data)
         typeRef = typeRef.transformSingle(transformer, data)
         return this
     }

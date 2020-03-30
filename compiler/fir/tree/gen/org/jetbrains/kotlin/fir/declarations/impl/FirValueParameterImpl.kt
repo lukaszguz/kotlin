@@ -59,6 +59,7 @@ open class FirValueParameterImpl @FirImplementationDetail constructor(
 
     override fun <D> transformChildren(transformer: FirTransformer<D>, data: D): FirValueParameterImpl {
         transformReturnTypeRef(transformer, data)
+        transformAnnotations(transformer, data)
         transformOtherChildren(transformer, data)
         return this
     }
@@ -88,8 +89,13 @@ open class FirValueParameterImpl @FirImplementationDetail constructor(
         return this
     }
 
-    override fun <D> transformOtherChildren(transformer: FirTransformer<D>, data: D): FirValueParameterImpl {
+    override fun <D> transformAnnotations(transformer: FirTransformer<D>, data: D): FirValueParameterImpl {
         annotations.transformInplace(transformer, data)
+        return this
+    }
+
+    override fun <D> transformOtherChildren(transformer: FirTransformer<D>, data: D): FirValueParameterImpl {
+        transformAnnotations(transformer, data)
         defaultValue = defaultValue?.transformSingle(transformer, data)
         return this
     }

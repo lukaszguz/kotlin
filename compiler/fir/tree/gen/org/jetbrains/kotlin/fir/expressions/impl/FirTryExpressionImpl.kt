@@ -38,11 +38,17 @@ internal class FirTryExpressionImpl(
     }
 
     override fun <D> transformChildren(transformer: FirTransformer<D>, data: D): FirTryExpressionImpl {
+        transformAnnotations(transformer, data)
         transformCalleeReference(transformer, data)
         transformTryBlock(transformer, data)
         transformCatches(transformer, data)
         transformFinallyBlock(transformer, data)
         transformOtherChildren(transformer, data)
+        return this
+    }
+
+    override fun <D> transformAnnotations(transformer: FirTransformer<D>, data: D): FirTryExpressionImpl {
+        annotations.transformInplace(transformer, data)
         return this
     }
 
@@ -68,7 +74,7 @@ internal class FirTryExpressionImpl(
 
     override fun <D> transformOtherChildren(transformer: FirTransformer<D>, data: D): FirTryExpressionImpl {
         typeRef = typeRef.transformSingle(transformer, data)
-        annotations.transformInplace(transformer, data)
+        transformAnnotations(transformer, data)
         return this
     }
 

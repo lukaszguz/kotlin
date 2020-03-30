@@ -68,6 +68,7 @@ internal class FirDefaultSetterValueParameter(
         transformDelegate(transformer, data)
         transformGetter(transformer, data)
         transformSetter(transformer, data)
+        transformAnnotations(transformer, data)
         transformOtherChildren(transformer, data)
         return this
     }
@@ -102,8 +103,13 @@ internal class FirDefaultSetterValueParameter(
         return this
     }
 
-    override fun <D> transformOtherChildren(transformer: FirTransformer<D>, data: D): FirDefaultSetterValueParameter {
+    override fun <D> transformAnnotations(transformer: FirTransformer<D>, data: D): FirDefaultSetterValueParameter {
         annotations.transformInplace(transformer, data)
+        return this
+    }
+
+    override fun <D> transformOtherChildren(transformer: FirTransformer<D>, data: D): FirDefaultSetterValueParameter {
+        transformAnnotations(transformer, data)
         defaultValue = defaultValue?.transformSingle(transformer, data)
         return this
     }
