@@ -277,7 +277,7 @@ class FirDeclarationsResolveTransformer(transformer: FirBodyResolveTransformer) 
 
         val isLocal = regularClass.symbol.classId.isLocal
         if (isLocal && regularClass !in context.targetedLocalClasses) {
-            return regularClass.runAllPhasesForLocalClass(components, data).compose()
+            return regularClass.runAllPhasesForLocalClass(transformer, components, data).compose()
         }
 
         return withTypeParametersOf(regularClass) {
@@ -320,7 +320,7 @@ class FirDeclarationsResolveTransformer(transformer: FirBodyResolveTransformer) 
         data: ResolutionMode
     ): CompositeTransformResult<FirStatement> {
         if (anonymousObject !in context.targetedLocalClasses) {
-            return anonymousObject.runAllPhasesForLocalClass(components, data).compose()
+            return anonymousObject.runAllPhasesForLocalClass(transformer, components, data).compose()
         }
         dataFlowAnalyzer.enterClass()
         val type = anonymousObject.defaultType()
@@ -372,6 +372,9 @@ class FirDeclarationsResolveTransformer(transformer: FirBodyResolveTransformer) 
         data: ResolutionMode
     ): CompositeTransformResult<FirSimpleFunction> {
         if (simpleFunction.resolvePhase == transformerPhase) return simpleFunction.compose()
+        if (simpleFunction.name.asString() == "addCallableDeclarationToProcess") {
+            val x = 1
+        }
         if (simpleFunction.resolvePhase == FirResolvePhase.IMPLICIT_TYPES_BODY_RESOLVE && transformerPhase == FirResolvePhase.BODY_RESOLVE) {
             simpleFunction.replaceResolvePhase(transformerPhase)
             return simpleFunction.compose()
